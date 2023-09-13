@@ -1,15 +1,18 @@
 import sys
 import time
-
+import json
 import pymongo
 import requests
 from pymongo import MongoClient
 
-_client: MongoClient
-_connection_str = "mongodb://127.0.0.1:27017/"
-_client = MongoClient(_connection_str)
-_db = _client.get_database("majob")
-_table = _db.get_collection("tziakcha")
+
+with open("config.json") as f:
+    config = json.load(f)
+
+
+_client: MongoClient = MongoClient(config["database"])
+_db = _client.get_database(config["wgUpdater"]["database"])
+_table = _db.get_collection(config["wgUpdater"]["collection"])
 
 
 class Tziakcha:

@@ -24,11 +24,9 @@ with open("config.json") as f:
     config = json.load(f)
 
 
-_client: MongoClient
-_connection_str = "mongodb://127.0.0.1:27017/"
-_client = MongoClient(_connection_str)
-_db = _client.get_database("majob")
-_table = _db.get_collection("tziakcha_room")
+_client: MongoClient = MongoClient(config["database"])
+_db = _client.get_database(config["gateway"]["database"])
+_table = _db.get_collection(config["gateway"]["collection"])
 
 
 class Tziakcha:
