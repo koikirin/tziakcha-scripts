@@ -107,6 +107,8 @@ def convert_game_to_doc(resp_json):
                 "g": j[f"gender{i}"],
                 "s": j[f"score{i}"],
                 "r": j.get(f"rank{i}"),
+                "l": j.get(f"level{i}"),
+                "e": j.get(f"elo{i}"),
             } for i in range(4))
         rd = list({
             "f": j[f"rid{i:02}"],   
