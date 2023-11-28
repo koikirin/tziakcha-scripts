@@ -84,21 +84,31 @@ def convert_game_to_doc(resp_json):
         cfg_h = int(cfg_bit[:8], 16)
         g = {
             "t": j["title"],
+            # 盘数
             "n": j["rd_cnt"],
             "d": bool(cfg_l & 0x80),
             "i": j["init_score"],
+            # 起和番
             "l": (cfg_h >> 24) & 0xff,
+            # 底分
             "b": (cfg_h >> 16) & 0xff,
+            # 时限 主要r30 次要r12 储备e 总时长lt
             "r12": (cfg_h >> 8) & 0xff,
             "r30": (cfg_h) & 0xff,
             "e": (cfg_l >> 24) & 0xff,
             "lt": (cfg_l >> 20) & 0xf,
+            "bl": bool(cfg_l & 0x80),
             "d12": bool(cfg_l & 0x8000),
+            # 错和罚分
             "fa": bool(cfg_l & 0x2000),
+            # 错和 鸣牌
             "fc": bool(cfg_l & 0x1000),
+            # 战术鸣牌
             "s": bool(cfg_l & 0x800),
+            # 手牌
             "o": bool(cfg_l & 0x400),
             "a": bool(cfg_l & 0x200),
+            # 随机座位
             "r": bool(cfg_l & 0x100),
         }
         u = list({
