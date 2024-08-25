@@ -267,8 +267,12 @@ async def update_record(game_id, force_unfinished: bool = False):
         print(f"Found: {game_id}")
         if not force_unfinished:
             return None
-    return convert_game_to_doc(game)
-
+    try:
+        return convert_game_to_doc(game)
+    except Exception as e:
+        print(f"Error converting record {e}: {game_id}")
+        raise e
+    
 
 async def update_records_hole(last_id=10001):
     global _server
