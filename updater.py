@@ -121,8 +121,8 @@ def convert_game_to_doc(resp_json):
                 "e": j.get(f"elo{i}"),
             } for i in range(4))
         rd = list({
-            "f": j[f"rid{i:02}"],   
-            "rbf": j[f"rbf{i:02}"],
+            "f": j.get(f"rid{i:02}"),   
+            "rbf": j.get(f"rbf{i:02}"),
             "rnk": j.get(f"rnk{i:02}"),
         } for i in range(j["rd_idx"] + 1))
 
@@ -183,11 +183,14 @@ def convert_game_to_doc(resp_json):
                 "rp": rp
             })
         return rounds
-
-    doc = cvt_json(resp_json)
-    doc["_id"] = resp_json["id"]
-    # doc["rounds"] = calc_rounds(doc)
-
+    try:
+        doc = cvt_json(resp_json)
+        doc["_id"] = resp_json["id"]
+    
+        # doc["rounds"] = calc_rounds(doc)
+    except Exception as e:
+        print(f"- Error converting record {e}: {resp_json['id']}")
+        raise e from None
     return doc
 
 
@@ -267,12 +270,8 @@ async def update_record(game_id, force_unfinished: bool = False):
         print(f"Found: {game_id}")
         if not force_unfinished:
             return None
-    try:
-        return convert_game_to_doc(game)
-    except Exception as e:
-        print(f"Error converting record {e}: {game_id}")
-        raise e
-    
+    return convert_game_to_doc(game)
+
 
 async def update_records_hole(last_id=10001):
     global _server
@@ -403,8 +402,12 @@ async def update_records():
                             time_limit
                             and time_used >= time_limit * 1000 * 60):
                         game2 = await _server.fetch_record(game["id"])
-                        docs_to_insert.append(convert_game_to_doc(game2))
-                        appended_cnt += 1
+                        try:
+                            docs_to_insert.append(convert_game_to_doc(game2))
+                            appended_cnt += 1
+                        except Exception as e:
+                            print(f"> Error converting record {e}: {game['id']}")
+                            pass
                 else:
                     stop_flag = True
                     break
